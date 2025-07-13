@@ -23,10 +23,42 @@ A modern ASP.NET Core MVC application to manage student attendance with Excel im
 
 ---
 
+## 📷 Screenshots
+
+### 🏠 Home Page
+![Home](StudentAttendanceApp/wwwroot/screenshots/Home.png)
+
+### 👩‍🎓 Students Page
+![Students](StudentAttendanceApp/wwwroot/screenshots/Students.png)
+
+### ➕ Add New Student
+![Add New Student](StudentAttendanceApp/wwwroot/screenshots/AddNewStudent.png)
+
+### ✏️ Edit Student
+![Edit Student](StudentAttendanceApp/wwwroot/screenshots/EditStudent.png)
+
+### 🗑️ Delete Student
+![Delete Student](StudentAttendanceApp/wwwroot/screenshots/Delete.png)
+
+### 📅 Mark Attendance
+![Mark Attendance](StudentAttendanceApp/wwwroot/screenshots/MarkAttendance.png)
+
+### 📖 Attendance Records
+![Attendance Records](StudentAttendanceApp/wwwroot/screenshots/AttendanceRecords.png)
+
+### ✅ Success Notification
+![Success](StudentAttendanceApp/wwwroot/screenshots/Success.png)
+
+### ❌ Error Page
+![Error](StudentAttendanceApp/wwwroot/screenshots/Error.png)
+
+
 ## 💻 Installation
 
 ### 🧑‍💻 Clone the repo:
 ```bash
 
 https://github.com/MohabIslam/StudentAttendanceApp
+
+
 
