@@ -1,0 +1,58 @@
+﻿@model StudentAttendanceApp.Models.Attendance
+
+@{
+    ViewData["Title"] = "Mark Attendance";
+}
+
+<div class="container mt-4">
+    <div class="card shadow">
+        <div class="card-header bg-danger text-white d-flex align-items-center">
+            <h3 class="mb-0"><i class="bi bi-check-circle"></i> Mark Attendance</h3>
+        </div>
+        <div class="card-body text-center">
+            <p class="lead fw-bold text-danger mb-4">
+                You can only mark yourself <span class="text-success">Present</span> if you’re connected to the campus WiFi.
+            </p>
+
+            <form asp-action="MarkPresent" method="post">
+                <div class="mb-3">
+                    <label for="studentId" class="form-label fw-bold">Select Your ID</label>
+
+                    @if (ViewBag.Students != null && ((List<StudentAttendanceApp.Models.Student>)ViewBag.Students).Any())
+                    {
+                        <select name="studentId" class="form-select" required>
+                            <option value="">-- Select Student ID --</option>
+                            @foreach (var student in ViewBag.Students)
+                            {
+                                <option value="@student.Id">@student.Id - @student.Name</option>
+                            }
+                        </select>
+                    }
+                    else
+                    {
+                        <div class="alert alert-warning">
+                            ⚠ No students found. Please add students first.
+                        </div>
+                    }
+
+                </div>
+
+                <button type="submit" class="btn btn-success btn-lg mt-3">
+                    ✅ I’m Present
+                </button>
+            </form>
+
+            <div class="mt-4">
+                <small class="text-muted">
+                    If you don’t mark yourself Present during the session, you’ll automatically be set as Absent.
+                </small>
+            </div>
+
+            <div class="mt-4">
+                <a asp-action="Index" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> Back
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

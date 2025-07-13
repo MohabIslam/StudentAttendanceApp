@@ -1,0 +1,20 @@
+﻿@{
+    ViewData["Title"] = "Error";
+    var errorMessage = TempData["Error"] as string ?? "Something went wrong!";
+}
+
+<div class="container mt-5 text-center">
+    <div class="card shadow-lg border-danger">
+        <div class="card-header bg-danger text-white">
+            <h2><i class="bi bi-exclamation-triangle-fill"></i> Oops!</h2>
+        </div>
+        <div class="card-body">
+            <p class="lead text-danger fw-bold">
+                @errorMessage
+            </p>
+            <a href="@Url.Action("Index", "Home")" class="btn btn-danger mt-3">
+                <i class="bi bi-house-door-fill"></i> Back to Home
+            </a>
+        </div>
+    </div>
+</div>

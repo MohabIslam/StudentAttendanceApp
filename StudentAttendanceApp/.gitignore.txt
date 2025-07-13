@@ -1,0 +1,20 @@
+# Build Folders
+bin/
+obj/
+
+# User-specific files
+*.user
+*.suo
+*.vspx
+*.dbmdl
+
+# Visual Studio
+.vs/
+.vscode/
+
+# Secrets
+appsettings.Development.json
+
+# OS generated files
+.DS_Store
+Thumbs.db

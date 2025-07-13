@@ -1,0 +1,33 @@
+﻿@model StudentAttendanceApp.Models.Student
+
+@{
+    ViewData["Title"] = "Student Details";
+}
+
+<div class="container mt-4">
+    <div class="card shadow">
+        <div class="card-header bg-danger text-white d-flex align-items-center">
+            <h3 class="mb-0"><i class="bi bi-person-lines-fill"></i> Student Details</h3>
+        </div>
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-sm-3 fw-bold">Name</dt>
+                <dd class="col-sm-9">@Model.Name</dd>
+
+                <dt class="col-sm-3 fw-bold">Email</dt>
+                <dd class="col-sm-9">@Model.Email</dd>
+
+                <dt class="col-sm-3 fw-bold">Class</dt>
+                <dd class="col-sm-9">@Model.Class</dd>
+            </dl>
+            <div class="d-flex justify-content-end">
+                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning me-2">
+                    <i class="bi bi-pencil-square"></i> Edit
+                </a>
+                <a asp-action="Index" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> Back to List
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

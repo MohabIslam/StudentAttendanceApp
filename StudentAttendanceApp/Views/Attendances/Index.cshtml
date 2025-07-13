@@ -1,0 +1,69 @@
+﻿@model IEnumerable<StudentAttendanceApp.Models.Attendance>
+
+@{
+    ViewData["Title"] = "Attendance Records";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="fw-bold text-danger">📅 Attendance Records</h2>
+        <div>
+            <a class="btn btn-danger btn-lg shadow" asp-action="Create">
+                <i class="bi bi-plus-circle"></i> Add Record
+            </a>
+            <a class="btn btn-success btn-lg shadow" asp-action="ExportToExcel">
+                <i class="bi bi-download"></i> Export to Excel
+            </a>
+        </div>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <h5 class="card-title text-secondary">👥 Attendance List</h5>
+            <table class="table table-hover table-bordered table-striped">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Student Name</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@item.Student.Name</td>
+                            <td>@item.Date.ToString("yyyy-MM-dd HH:mm")</td>
+                            <td>
+                                @if (item.Status == "Present")
+                                {
+                                    <span class="badge bg-success">Present</span>
+                                }
+                                else if (item.Status == "Absent")
+                                {
+                                    <span class="badge bg-danger">Absent</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">@item.Status</span>
+                                }
+                            </td>
+                            <td class="text-center">
+                                <a class="btn btn-outline-warning btn-sm" asp-action="Edit" asp-route-id="@item.Id">
+                                    <i class="bi bi-pencil-square"></i> Edit
+                                </a>
+                                <a class="btn btn-outline-info btn-sm" asp-action="Details" asp-route-id="@item.Id">
+                                    <i class="bi bi-eye"></i> Details
+                                </a>
+                                <a class="btn btn-outline-danger btn-sm" asp-action="Delete" asp-route-id="@item.Id">
+                                    <i class="bi bi-trash"></i> Delete
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
