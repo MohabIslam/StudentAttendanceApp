@@ -16,7 +16,7 @@ namespace StudentAttendanceApp.Data
 
         public DbSet<Branch> Branches { get; set; }
             public DbSet<Track> Tracks { get; set; }
-            public DbSet<StudentGroup> StudentGroup { get; set; }
+            public DbSet<StudentGroup> StudentGroups { get; set; }
             public DbSet<User> Users { get; set; }
             public DbSet<Role> Roles { get; set; }
 
