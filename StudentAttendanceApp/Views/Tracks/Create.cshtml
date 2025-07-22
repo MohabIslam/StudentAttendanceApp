@@ -1,0 +1,30 @@
+﻿@model StudentAttendanceApp.Models.Track
+@{
+    ViewData["Title"] = "Add Track";
+}
+
+<div class="container mt-4">
+    <div class="card shadow">
+        <div class="card-header bg-success text-white">
+            <h3>➕ Add Track</h3>
+        </div>
+        <div class="card-body">
+            <form asp-action="Create">
+                <div class="mb-3">
+                    <label asp-for="Name" class="form-label fw-bold">Track Name</label>
+                    <input asp-for="Name" class="form-control" placeholder="Enter track name" />
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="BranchId" class="form-label fw-bold">Select Branch</label>
+                    <select asp-for="BranchId" asp-items="ViewBag.Branches" class="form-select"></select>
+                    <span asp-validation-for="BranchId" class="text-danger"></span>
+                </div>
+
+                <button type="submit" class="btn btn-success">💾 Save</button>
+                <a asp-action="Index" class="btn btn-secondary">⬅ Back</a>
+            </form>
+        </div>
+    </div>
+</div>
