@@ -27,12 +27,12 @@ namespace StudentAttendanceApp.Controllers
         [HttpPost]
         public IActionResult Create(Branch branch)
         {
-            if (ModelState.IsValid)
-            {
+            //if (ModelState.IsValid)
+            //{
                 _context.Branches.Add(branch);
                 _context.SaveChanges();
                 return RedirectToAction(nameof(Index));
-            }
+        //    }
             return View(branch);
         }
 
@@ -46,12 +46,12 @@ namespace StudentAttendanceApp.Controllers
         [HttpPost]
         public IActionResult Edit(Branch branch)
         {
-            if (ModelState.IsValid)
-            {
+            //if (ModelState.IsValid)
+            //{
                 _context.Branches.Update(branch);
                 _context.SaveChanges();
                 return RedirectToAction(nameof(Index));
-            }
+     //       }
             return View(branch);
         }
 
