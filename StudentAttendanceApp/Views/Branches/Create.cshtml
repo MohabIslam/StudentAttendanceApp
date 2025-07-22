@@ -1,0 +1,30 @@
+﻿@model StudentAttendanceApp.Models.Branch
+@{
+    ViewData["Title"] = "Add Branch";
+}
+
+<div class="container mt-4">
+    <div class="card shadow">
+        <div class="card-header bg-success text-white">
+            <h3>➕ Add Branch</h3>
+        </div>
+        <div class="card-body">
+            <form asp-action="Create">
+                <div class="mb-3">
+                    <label asp-for="Name" class="form-label fw-bold">Branch Name</label>
+                    <input asp-for="Name" class="form-control" placeholder="Enter branch name" />
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Address" class="form-label fw-bold">Address</label>
+                    <input asp-for="Address" class="form-control" placeholder="Enter branch address" />
+                    <span asp-validation-for="Address" class="text-danger"></span>
+                </div>
+
+                <button type="submit" class="btn btn-success">💾 Save</button>
+                <a asp-action="Index" class="btn btn-secondary">⬅ Back</a>
+            </form>
+        </div>
+    </div>
+</div>
