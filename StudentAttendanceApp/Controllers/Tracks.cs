@@ -61,12 +61,20 @@ namespace StudentAttendanceApp.Controllers
         [HttpPost]
         public IActionResult Edit(Track track)
         {
+            if (!ModelState.IsValid)
+            {
+                foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
+                {
+                    Console.WriteLine(error.ErrorMessage);
+                }
+            }
+
             //if (ModelState.IsValid)
             //{
-                _context.Tracks.Update(track);
-                _context.SaveChanges();
-                return RedirectToAction(nameof(Index));
-       //     }
+            _context.Tracks.Update(track);
+            _context.SaveChanges();
+            return RedirectToAction(nameof(Index));
+            //     }
             ViewBag.Branches = new SelectList(_context.Branches, "Id", "Name", track.BranchId);
             return View(track);
         }

@@ -56,12 +56,20 @@ namespace StudentAttendanceApp.Controllers
         [HttpPost]
         public IActionResult Edit(StudentGroup group)
         {
+            if (!ModelState.IsValid)
+            {
+                foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
+                {
+                    Console.WriteLine(error.ErrorMessage);
+                }
+            }
+
             //if (ModelState.IsValid)
             //{
-                _context.StudentGroups.Update(group);
-                _context.SaveChanges();
-                return RedirectToAction(nameof(Index));
-      //      }
+            _context.StudentGroups.Update(group);
+            _context.SaveChanges();
+            return RedirectToAction(nameof(Index));
+            //      }
             ViewBag.Tracks = new SelectList(_context.Tracks, "Id", "Name", group.TrackId);
             return View(group);
         }

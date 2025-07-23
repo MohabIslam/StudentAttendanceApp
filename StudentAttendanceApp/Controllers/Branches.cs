@@ -27,12 +27,20 @@ namespace StudentAttendanceApp.Controllers
         [HttpPost]
         public IActionResult Create(Branch branch)
         {
+            if (!ModelState.IsValid)
+            {
+                foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
+                {
+                    Console.WriteLine(error.ErrorMessage);
+                }
+            }
+
             //if (ModelState.IsValid)
             //{
-                _context.Branches.Add(branch);
-                _context.SaveChanges();
-                return RedirectToAction(nameof(Index));
-        //    }
+            _context.Branches.Add(branch);
+            _context.SaveChanges();
+            return RedirectToAction(nameof(Index));
+            //    }
             return View(branch);
         }
 
