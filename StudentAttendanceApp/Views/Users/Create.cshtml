@@ -1,0 +1,49 @@
+﻿@model StudentAttendanceApp.ViewModels.UserFormViewModel
+
+<div class="container mt-4">
+    <div class="card shadow">
+        <div class="card-header bg-success text-white">
+            <h3>➕ Add User</h3>
+        </div>
+        <div class="card-body">
+            <form asp-action="Create">
+                <div class="mb-3">
+                    <label asp-for="User.FullName" class="form-label fw-bold">Full Name</label>
+                    <input asp-for="User.FullName" class="form-control" />
+                    <span asp-validation-for="User.FullName" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="User.Email" class="form-label fw-bold">Email</label>
+                    <input asp-for="User.Email" type="email" class="form-control" />
+                    <span asp-validation-for="User.Email" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="User.PasswordHash" class="form-label fw-bold">Password</label>
+                    <input asp-for="User.PasswordHash" type="password" class="form-control" />
+                    <span asp-validation-for="User.PasswordHash" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="User.RoleId" class="form-label fw-bold">Role</label>
+                    <select asp-for="User.RoleId" asp-items="@(new SelectList(Model.Roles, "Id", "Name"))" class="form-select">
+                        <option value="">-- Select Role --</option>
+                    </select>
+                    <span asp-validation-for="User.RoleId" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="User.BranchId" class="form-label fw-bold">Branch</label>
+                    <select asp-for="User.BranchId" asp-items="@(new SelectList(Model.Branches, "Id", "Name"))" class="form-select">
+                        <option value="">-- Select Branch --</option>
+                    </select>
+                    <span asp-validation-for="User.BranchId" class="text-danger"></span>
+                </div>
+
+                <button type="submit" class="btn btn-success">💾 Save</button>
+                <a asp-action="Index" class="btn btn-secondary">⬅ Back</a>
+            </form>
+        </div>
+    </div>
+</div>

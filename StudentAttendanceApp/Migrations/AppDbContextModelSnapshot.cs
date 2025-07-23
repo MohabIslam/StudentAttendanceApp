@@ -44,7 +44,7 @@ namespace StudentAttendanceApp.Migrations
 
                     b.HasIndex("StudentId");
 
-                    b.ToTable("Attendances");
+                    b.ToTable("Attendances", (string)null);
                 });
 
             modelBuilder.Entity("StudentAttendanceApp.Models.Branch", b =>
@@ -67,7 +67,7 @@ namespace StudentAttendanceApp.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Branches");
+                    b.ToTable("Branches", (string)null);
                 });
 
             modelBuilder.Entity("StudentAttendanceApp.Models.Role", b =>
@@ -84,7 +84,7 @@ namespace StudentAttendanceApp.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Roles");
+                    b.ToTable("Roles", (string)null);
                 });
 
             modelBuilder.Entity("StudentAttendanceApp.Models.Student", b =>
@@ -109,7 +109,7 @@ namespace StudentAttendanceApp.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Students");
+                    b.ToTable("Students", (string)null);
                 });
 
             modelBuilder.Entity("StudentAttendanceApp.Models.StudentGroup", b =>
@@ -134,7 +134,7 @@ namespace StudentAttendanceApp.Migrations
 
                     b.HasIndex("TrackId");
 
-                    b.ToTable("StudentGroups");
+                    b.ToTable("StudentGroups", (string)null);
                 });
 
             modelBuilder.Entity("StudentAttendanceApp.Models.Track", b =>
@@ -159,7 +159,7 @@ namespace StudentAttendanceApp.Migrations
 
                     b.HasIndex("BranchId");
 
-                    b.ToTable("Tracks");
+                    b.ToTable("Tracks", (string)null);
                 });
 
             modelBuilder.Entity("StudentAttendanceApp.Models.User", b =>
@@ -197,7 +197,7 @@ namespace StudentAttendanceApp.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("StudentAttendanceApp.Models.Attendance", b =>
