@@ -1,0 +1,38 @@
+﻿@model IEnumerable<StudentAttendanceApp.Models.StudentGroup>
+@{
+    ViewData["Title"] = "Groups";
+}
+
+<div class="container mt-4">
+    <h2 class="text-danger">👥 Groups</h2>
+    <a class="btn btn-success mb-3" asp-action="Create">➕ Add New Group</a>
+
+    <table class="table table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Track</th>
+                <th>Branch</th>
+                <th>Created At</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var group in Model)
+            {
+                <tr>
+                    <td>@group.Id</td>
+                    <td>@group.Name</td>
+                    <td>@group.Track.Name</td>
+                    <td>@group.Track.Branch.Name</td>
+                    <td>@group.CreatedAt.ToString("yyyy-MM-dd")</td>
+                    <td>
+                        <a class="btn btn-warning btn-sm" asp-action="Edit" asp-route-id="@group.Id">✏ Edit</a>
+                        <a class="btn btn-danger btn-sm" asp-action="Delete" asp-route-id="@group.Id">🗑 Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

@@ -1,0 +1,30 @@
+﻿@model StudentAttendanceApp.Models.StudentGroup
+@{
+    ViewData["Title"] = "Add Group";
+}
+
+<div class="container mt-4">
+    <div class="card shadow">
+        <div class="card-header bg-success text-white">
+            <h3>➕ Add Group</h3>
+        </div>
+        <div class="card-body">
+            <form asp-action="Create">
+                <div class="mb-3">
+                    <label asp-for="Name" class="form-label fw-bold">Group Name</label>
+                    <input asp-for="Name" class="form-control" placeholder="Enter group name" />
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="TrackId" class="form-label fw-bold">Select Track</label>
+                    <select asp-for="TrackId" asp-items="ViewBag.Tracks" class="form-select"></select>
+                    <span asp-validation-for="TrackId" class="text-danger"></span>
+                </div>
+
+                <button type="submit" class="btn btn-success">💾 Save</button>
+                <a asp-action="Index" class="btn btn-secondary">⬅ Back</a>
+            </form>
+        </div>
+    </div>
+</div>
