@@ -33,12 +33,13 @@
                 </div>
 
                 <div class="mb-3">
-                    <label asp-for="User.RoleId" class="form-label fw-bold">Role</label>
-                    <select asp-for="User.RoleId" asp-items="@(new SelectList(Model.Roles, "Id", "Name"))" class="form-select">
+                    <label class="form-label fw-bold">Role</label>
+                    <select asp-for="SelectedRole" asp-items="Model.Roles" class="form-select">
                         <option value="">-- Select Role --</option>
                     </select>
-                    <span asp-validation-for="User.RoleId" class="text-danger"></span>
+                    <span asp-validation-for="SelectedRole" class="text-danger"></span>
                 </div>
+
 
                 <div class="mb-3">
                     <label asp-for="User.BranchId" class="form-label fw-bold">Branch</label>

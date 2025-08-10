@@ -1,4 +1,4 @@
-﻿@model IEnumerable<StudentAttendanceApp.Models.User>
+﻿@model IEnumerable<StudentAttendanceApp.ViewModels.UserWithRoleViewModel>
 
 @{
     ViewData["Title"] = "Users";
@@ -25,16 +25,16 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var user in Model)
+                    @foreach (var item in Model)
                     {
                         <tr>
-                            <td>@user.FullName</td>
-                            <td>@user.Email</td>
-                            <td>@user.Role?.Name</td>
-                            <td>@user.Branch?.Name</td>
+                            <td>@item.User.FullName</td>
+                            <td>@item.User.Email</td>
+                            <td>@item.RoleName</td>
+                            <td>@item.User.Branch?.Name</td>
                             <td>
-                                <a class="btn btn-warning btn-sm" asp-action="Edit" asp-route-id="@user.Id">✏️ Edit</a>
-                                <a class="btn btn-danger btn-sm" asp-action="Delete" asp-route-id="@user.Id">🗑 Delete</a>
+                                <a class="btn btn-warning btn-sm" asp-action="Edit" asp-route-id="@item.User.Id">✏️ Edit</a>
+                                <a class="btn btn-danger btn-sm" asp-action="Delete" asp-route-id="@item.User.Id">🗑 Delete</a>
                             </td>
                         </tr>
                     }
