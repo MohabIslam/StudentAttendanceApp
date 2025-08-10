@@ -1,5 +1,6 @@
 ﻿using ClosedXML.Excel;
 using DocumentFormat.OpenXml.InkML;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -19,6 +20,7 @@ using System.Threading.Tasks;
 
 namespace StudentAttendanceApp.Controllers
 {
+    //[Authorize]
     public class AttendancesController : Controller
     {
         private readonly AppDbContext _context;

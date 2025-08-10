@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using StudentAttendanceApp.Data;
@@ -6,6 +7,8 @@ using StudentAttendanceApp.Models;
 
 namespace StudentAttendanceApp.Controllers
 {
+
+    //[Authorize(Roles = "Admin,Teacher")]
     public class TracksController : Controller
     {
         private readonly AppDbContext _context;

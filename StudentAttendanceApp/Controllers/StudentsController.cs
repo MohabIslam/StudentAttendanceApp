@@ -1,4 +1,5 @@
 ﻿using ClosedXML.Excel;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -13,6 +14,7 @@ using System.Threading.Tasks;
 
 namespace StudentAttendanceApp.Controllers
 {
+    //[Authorize (Roles = "Admin,Teacher")]
     public class StudentsController : Controller
     {
         private readonly AppDbContext _context;

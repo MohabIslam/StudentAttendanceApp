@@ -1,33 +1,44 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using StudentAttendanceApp.Data;
 using StudentAttendanceApp.Models;
 using StudentAttendanceApp.ViewModels;
-using Microsoft.AspNetCore.Identity;
 
 namespace StudentAttendanceApp.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class UsersController : Controller
     {
         private readonly AppDbContext _context;
+        private readonly UserManager<User> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
 
-        private readonly IPasswordHasher<User> _passwordHasher;
-
-        public UsersController(AppDbContext context, IPasswordHasher<User> passwordHasher)
+        public UsersController(AppDbContext context, UserManager<User> userManager, RoleManager<IdentityRole> roleManager)
         {
             _context = context;
-            _passwordHasher = passwordHasher;
+            _userManager = userManager;
+            _roleManager = roleManager;
         }
 
-
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            var users = _context.Users
-                                .Include(u => u.Role)
-                                .Include(u => u.Branch)
-                                .ToList();
-            return View(users);
+            var users = await _userManager.Users.Include(u => u.Branch).ToListAsync();
+
+            var userList = new List<UserWithRoleViewModel>();
+            foreach (var user in users)
+            {
+                var roles = await _userManager.GetRolesAsync(user);
+                userList.Add(new UserWithRoleViewModel
+                {
+                    User = user,
+                    RoleName = roles.FirstOrDefault() ?? "No Role"
+                });
+            }
+
+            return View(userList);
         }
 
         public IActionResult Create()
@@ -35,136 +46,144 @@ namespace StudentAttendanceApp.Controllers
             var viewModel = new UserFormViewModel
             {
                 User = new User(),
-                Roles = _context.Roles.ToList(),
-                Branches = _context.Branches.ToList()
+                Branches = _context.Branches.Select(b => new SelectListItem
+                {
+                    Value = b.Id.ToString(),
+                    Text = b.Name
+                }).ToList(),
+                Roles = _roleManager.Roles.Select(r => new SelectListItem
+                {
+                    Value = r.Name,
+                    Text = r.Name
+                }).ToList()
             };
+
             return View(viewModel);
         }
+
         [HttpPost]
-        public IActionResult Create(UserFormViewModel vm)
+        public async Task<IActionResult> Create(UserFormViewModel vm)
         {
-            vm.Roles = _context.Roles.ToList();
-
-            vm.Branches = _context.Branches.ToList();
-
-
-            // 🟢 اربط الـ Role و Branch من قاعدة البيانات بناءً على الـ Id
-            var role = _context.Roles.Find(vm.User.RoleId);
-            var branch = _context.Branches.Find(vm.User.BranchId);
-
-            if (role == null || branch == null)
+            vm.Branches = _context.Branches.Select(b => new SelectListItem
             {
-                ModelState.AddModelError("", "Invalid Role or Branch selected.");
+                Value = b.Id.ToString(),
+                Text = b.Name
+            }).ToList();
+
+            vm.Roles = _roleManager.Roles.Select(r => new SelectListItem
+            {
+                Value = r.Name,
+                Text = r.Name
+            }).ToList();
+
+            if (!ModelState.IsValid)
+                return View(vm);
+
+            var user = new User
+            {
+                UserName = vm.User.Email,
+                Email = vm.User.Email,
+                FullName = vm.User.FullName,
+                BranchId = vm.User.BranchId,
+                CreatedAt = DateTime.Now
+            };
+
+            var result = await _userManager.CreateAsync(user, vm.User.PasswordHash);
+            if (!result.Succeeded)
+            {
+                foreach (var error in result.Errors)
+                    ModelState.AddModelError("", error.Description);
                 return View(vm);
             }
 
-            vm.User.RoleId = role.Id;
-            vm.User.BranchId = branch.Id;
-            vm.User.Role =  role ;
-            vm.User.Branch = branch;
-
-            foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
-            {
-                Console.WriteLine(error.ErrorMessage);
-            }
-
-            //if (!ModelState.IsValid)
-            //{
-           //     return View(vm);
-       //     }
-
-
-            vm.User.PasswordHash = _passwordHasher.HashPassword(vm.User, vm.User.PasswordHash);
-
-            _context.Users.Add(vm.User);
-            _context.SaveChanges();
+            if (!string.IsNullOrEmpty(vm.SelectedRole))
+                await _userManager.AddToRoleAsync(user, vm.SelectedRole);
 
             return RedirectToAction(nameof(Index));
         }
 
-
-        public IActionResult Edit(int id)
+        public async Task<IActionResult> Edit(string id)
         {
-            var user = _context.Users.Find(id);
+            var user = await _userManager.FindByIdAsync(id);
             if (user == null) return NotFound();
+
+            var currentRoles = await _userManager.GetRolesAsync(user);
 
             var viewModel = new UserFormViewModel
             {
                 User = user,
-                Roles = _context.Roles.ToList(),
-                Branches = _context.Branches.ToList()
+                Branches = _context.Branches.Select(b => new SelectListItem
+                {
+                    Value = b.Id.ToString(),
+                    Text = b.Name
+                }).ToList(),
+                Roles = _roleManager.Roles.Select(r => new SelectListItem
+                {
+                    Value = r.Name,
+                    Text = r.Name
+                }).ToList(),
+                SelectedRole = currentRoles.FirstOrDefault()
             };
+
             return View(viewModel);
         }
 
         [HttpPost]
-        public IActionResult Edit(int id, UserFormViewModel vm)
+        public async Task<IActionResult> Edit(string id, UserFormViewModel vm)
         {
             if (id != vm.User.Id) return NotFound();
 
-            //if (!ModelState.IsValid)
-            //{
-            //    vm.Roles = _context.Roles.ToList();
-            //    vm.Branches = _context.Branches.ToList();
-            //    return View(vm);
-            //}
-
-            var role = _context.Roles.Find(vm.User.RoleId);
-            var branch = _context.Branches.Find(vm.User.BranchId);
-
-            if (role == null || branch == null)
-            {
-                ModelState.AddModelError("", "Invalid Role or Branch selected.");
-                return View(vm);
-            }
-
-            vm.User.RoleId = role.Id;
-            vm.User.BranchId = branch.Id;
-            vm.User.Role = role;
-            vm.User.Branch = branch;
-
-
-
-            var user = _context.Users.Find(id);
+            var user = await _userManager.FindByIdAsync(id);
             if (user == null) return NotFound();
 
             user.FullName = vm.User.FullName;
             user.Email = vm.User.Email;
-            user.RoleId = vm.User.RoleId;
+            user.UserName = vm.User.Email;
             user.BranchId = vm.User.BranchId;
-            if (!string.IsNullOrEmpty(vm.User.PasswordHash))
+
+            var result = await _userManager.UpdateAsync(user);
+            if (!result.Succeeded)
             {
-                user.PasswordHash = _passwordHasher.HashPassword(user, vm.User.PasswordHash);
+                ModelState.AddModelError("", "Update failed");
+                return View(vm);
             }
-            _context.SaveChanges();
+
+            var oldRoles = await _userManager.GetRolesAsync(user);
+            await _userManager.RemoveFromRolesAsync(user, oldRoles);
+
+            if (!string.IsNullOrEmpty(vm.SelectedRole))
+                await _userManager.AddToRoleAsync(user, vm.SelectedRole);
 
             return RedirectToAction(nameof(Index));
         }
 
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(string id)
         {
-            var user = _context.Users
-                               .Include(u => u.Role)
-                               .Include(u => u.Branch)
-                               .FirstOrDefault(u => u.Id == id);
+            var user = await _userManager.Users
+                .Include(u => u.Branch)
+                .FirstOrDefaultAsync(u => u.Id == id);
 
             if (user == null) return NotFound();
 
-            return View(user);
+            var roles = await _userManager.GetRolesAsync(user);
+
+            var viewModel = new UserDeleteViewModel
+            {
+                User = user,
+                RoleName = roles.FirstOrDefault() ?? "No Role"
+            };
+
+            return View(viewModel);
         }
 
         [HttpPost, ActionName("Delete")]
-        public IActionResult DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(string id)
         {
-            var user = _context.Users.Find(id);
+            var user = await _userManager.FindByIdAsync(id);
             if (user != null)
-            {
-                _context.Users.Remove(user);
-                _context.SaveChanges();
-            }
+                await _userManager.DeleteAsync(user);
 
             return RedirectToAction(nameof(Index));
         }
     }
- 
 }
