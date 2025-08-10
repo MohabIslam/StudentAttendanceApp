@@ -1,0 +1,69 @@
+﻿@model StudentAttendanceApp.ViewModels.RegisterViewModel
+
+@{
+    ViewData["Title"] = "Register";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0">📝 Register</h4>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Register">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                        <div class="mb-3">
+                            <label asp-for="FullName" class="form-label fw-bold"></label>
+                            <input asp-for="FullName" class="form-control" />
+                            <span asp-validation-for="FullName" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Email" class="form-label fw-bold"></label>
+                            <input asp-for="Email" class="form-control" />
+                            <span asp-validation-for="Email" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Password" class="form-label fw-bold"></label>
+                            <input asp-for="Password" type="password" class="form-control" />
+                            <span asp-validation-for="Password" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="ConfirmPassword" class="form-label fw-bold"></label>
+                            <input asp-for="ConfirmPassword" type="password" class="form-control" />
+                            <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="BranchId" class="form-label fw-bold">Branch</label>
+                            <select asp-for="BranchId" asp-items="Model.BranchList" class="form-select"></select>
+                            <span asp-validation-for="BranchId" class="text-danger"></span>
+                        </div>
+
+                        @if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+                        {
+                            <div class="mb-3">
+                                <label asp-for="SelectedRole" class="form-label fw-bold">Role</label>
+                                <select asp-for="SelectedRole" asp-items="Model.RoleList" class="form-select">
+                                    <option value="">-- Select Role --</option>
+                                </select>
+                                <span asp-validation-for="SelectedRole" class="text-danger"></span>
+                            </div>
+                        }
+
+                        <button type="submit" class="btn btn-success w-100">📥 Register</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
