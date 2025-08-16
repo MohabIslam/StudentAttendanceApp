@@ -31,7 +31,7 @@
     <div class="card shadow-sm">
         <div class="card-body">
             <h5 class="card-title text-secondary">👥 Student List</h5>
-            <table class="table table-hover table-bordered table-striped">
+            <table id="studentsTable" class="table table-hover table-bordered table-striped">
                 <thead class="table-dark">
                     <tr>
                         <th>@Html.DisplayNameFor(model => model.First().Name)</th>
@@ -62,3 +62,33 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <!-- DataTables CSS & JS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('#studentsTable').DataTable({
+                "pageLength": 10,
+                "lengthMenu": [5, 10, 20, 50],
+                "searching": true,
+                "ordering": true,
+                "info": true,
+                "language": {
+                    "search": "🔍 Search:",
+                    "lengthMenu": "Show _MENU_ entries",
+                    "info": "Showing _START_ to _END_ of _TOTAL_ students",
+                    "paginate": {
+                        "first": "First",
+                        "last": "Last",
+                        "next": "→",
+                        "previous": "←"
+                    }
+                }
+            });
+        });
+    </script>
+}
