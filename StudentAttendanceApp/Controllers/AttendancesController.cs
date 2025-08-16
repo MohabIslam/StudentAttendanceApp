@@ -126,8 +126,8 @@ namespace StudentAttendanceApp.Controllers
                 return NotFound();
             }
 
-            if (ModelState.IsValid)
-            {
+            //if (ModelState.IsValid)
+            //{
                 try
                 {
                     _context.Update(attendance);
@@ -145,7 +145,7 @@ namespace StudentAttendanceApp.Controllers
                     }
                 }
                 return RedirectToAction(nameof(Index));
-            }
+      //      }
 
             return View(attendance);
         }
@@ -233,7 +233,8 @@ namespace StudentAttendanceApp.Controllers
             var allowedRanges = new List<string>
                 {
                     "192.168.1.0/24", // Example: Campus WiFi range
-                    "10.0.0.0/16"// Add your real campus IP ranges
+                    "10.0.0.0/16",// Add your real campus IP ranges
+                    "::1/16"
                 };
 
             if (!IpHelper.IsIpAllowed(userIp, allowedRanges))

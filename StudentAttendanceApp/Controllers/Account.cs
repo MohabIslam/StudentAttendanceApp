@@ -116,7 +116,8 @@ namespace StudentAttendanceApp.Controllers
                     return RedirectToAction("Index", "Users");
 
                 await _signInManager.SignInAsync(user, isPersistent: false);
-                return RedirectToAction("Dashboard", "Home");
+                return RedirectToAction("Index", "Dashboard");
+
             }
 
             foreach (var error in result.Errors)
@@ -141,7 +142,7 @@ namespace StudentAttendanceApp.Controllers
                 var result = await _signInManager.PasswordSignInAsync(user, model.Password, isPersistent: false, lockoutOnFailure: false);
                 if (result.Succeeded)
                 {
-                    return RedirectToAction("Dashboard", "Home");
+                    return RedirectToAction("Index", "Dashboard");
                 }
             }
 

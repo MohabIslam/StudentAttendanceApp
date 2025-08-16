@@ -25,21 +25,25 @@ namespace StudentAttendanceApp.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var users = await _userManager.Users.Include(u => u.Branch).ToListAsync();
+            var users = await _userManager.Users
+                .Include(u => u.Branch)
+                .AsNoTracking()
+                .ToListAsync();
 
-            var userList = new List<UserWithRoleViewModel>();
-            foreach (var user in users)
+            var userRoles = await (from ur in _context.UserRoles
+                                   join r in _context.Roles on ur.RoleId equals r.Id
+                                   select new { ur.UserId, RoleName = r.Name })
+                                  .ToListAsync();
+
+            var userList = users.Select(u => new UserWithRoleViewModel
             {
-                var roles = await _userManager.GetRolesAsync(user);
-                userList.Add(new UserWithRoleViewModel
-                {
-                    User = user,
-                    RoleName = roles.FirstOrDefault() ?? "No Role"
-                });
-            }
+                User = u,
+                RoleName = userRoles.FirstOrDefault(r => r.UserId == u.Id)?.RoleName ?? "No Role"
+            }).ToList();
 
             return View(userList);
         }
+
 
         public IActionResult Create()
         {
@@ -57,8 +61,9 @@ namespace StudentAttendanceApp.Controllers
                     Text = r.Name
                 }).ToList()
             };
+            //return View(viewModel);
+            return View("Create", viewModel);
 
-            return View(viewModel);
         }
 
         [HttpPost]
@@ -102,60 +107,132 @@ namespace StudentAttendanceApp.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        [HttpGet]
         public async Task<IActionResult> Edit(string id)
         {
-            var user = await _userManager.FindByIdAsync(id);
-            if (user == null) return NotFound();
+            if (string.IsNullOrEmpty(id))
+                return NotFound();
 
-            var currentRoles = await _userManager.GetRolesAsync(user);
+            var user = await _userManager.FindByIdAsync(id);
+            if (user == null)
+                return NotFound();
+
+            var userRoles = await _userManager.GetRolesAsync(user);
+            var selectedRole = userRoles.FirstOrDefault();
 
             var viewModel = new UserFormViewModel
             {
                 User = user,
-                Branches = _context.Branches.Select(b => new SelectListItem
-                {
-                    Value = b.Id.ToString(),
-                    Text = b.Name
-                }).ToList(),
-                Roles = _roleManager.Roles.Select(r => new SelectListItem
-                {
-                    Value = r.Name,
-                    Text = r.Name
-                }).ToList(),
-                SelectedRole = currentRoles.FirstOrDefault()
+                Branches = _context.Branches
+                    .Select(b => new SelectListItem
+                    {
+                        Value = b.Id.ToString(),
+                        Text = b.Name,
+                        Selected = user.BranchId == b.Id
+                    }).ToList(),
+                Roles = _roleManager.Roles
+                    .Select(r => new SelectListItem
+                    {
+                        Value = r.Name,
+                        Text = r.Name,
+                        Selected = r.Name == selectedRole
+                    }).ToList(),
+                SelectedRole = selectedRole
             };
 
-            return View(viewModel);
+            //return View(viewModel);
+            return View("Edit", viewModel);
+
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(string id, UserFormViewModel vm)
+        public async Task<IActionResult> Edit(string id, UserFormViewModel model, string NewPassword)
         {
-            if (id != vm.User.Id) return NotFound();
+            if (id != model.User.Id)
+                return NotFound();
+
+            //if (!ModelState.IsValid)
+            //{
+            //    model.Branches = _context.Branches
+            //        .Select(b => new SelectListItem
+            //        {
+            //            Value = b.Id.ToString(),
+            //            Text = b.Name,
+            //            Selected = b.Id == model.User.BranchId
+            //        }).ToList();
+
+            //    model.Roles = _roleManager.Roles
+            //        .Select(r => new SelectListItem
+            //        {
+            //            Value = r.Name,
+            //            Text = r.Name,
+            //            Selected = r.Name == model.SelectedRole
+            //        }).ToList();
+
+            //    return View(model);
+            //}
 
             var user = await _userManager.FindByIdAsync(id);
-            if (user == null) return NotFound();
+            if (user == null)
+                return NotFound();
 
-            user.FullName = vm.User.FullName;
-            user.Email = vm.User.Email;
-            user.UserName = vm.User.Email;
-            user.BranchId = vm.User.BranchId;
+            // Update basic info
+            user.FullName = model.User.FullName;
+            user.Email = model.User.Email;
+            user.UserName = model.User.Email;
+            user.BranchId = model.User.BranchId;
+
+            // Update password if provided
+            if (!string.IsNullOrWhiteSpace(NewPassword))
+            {
+                var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+                var passResult = await _userManager.ResetPasswordAsync(user, token, NewPassword);
+                if (!passResult.Succeeded)
+                {
+                    foreach (var error in passResult.Errors)
+                        ModelState.AddModelError("", error.Description);
+
+                    // Repopulate dropdowns and return view
+                    model.Branches = _context.Branches
+                        .Select(b => new SelectListItem
+                        {
+                            Value = b.Id.ToString(),
+                            Text = b.Name,
+                            Selected = b.Id == model.User.BranchId
+                        }).ToList();
+
+                    model.Roles = _roleManager.Roles
+                        .Select(r => new SelectListItem
+                        {
+                            Value = r.Name,
+                            Text = r.Name,
+                            Selected = r.Name == model.SelectedRole
+                        }).ToList();
+
+                    return View(model);
+                }
+            }
 
             var result = await _userManager.UpdateAsync(user);
             if (!result.Succeeded)
             {
-                ModelState.AddModelError("", "Update failed");
-                return View(vm);
+                foreach (var error in result.Errors)
+                    ModelState.AddModelError("", error.Description);
+
+                return View(model);
             }
 
-            var oldRoles = await _userManager.GetRolesAsync(user);
-            await _userManager.RemoveFromRolesAsync(user, oldRoles);
+            // Update role
+            var currentRoles = await _userManager.GetRolesAsync(user);
+            if (currentRoles.Any())
+                await _userManager.RemoveFromRolesAsync(user, currentRoles);
 
-            if (!string.IsNullOrEmpty(vm.SelectedRole))
-                await _userManager.AddToRoleAsync(user, vm.SelectedRole);
+            if (!string.IsNullOrEmpty(model.SelectedRole) && await _roleManager.RoleExistsAsync(model.SelectedRole))
+                await _userManager.AddToRoleAsync(user, model.SelectedRole);
 
             return RedirectToAction(nameof(Index));
         }
+
 
         public async Task<IActionResult> Delete(string id)
         {

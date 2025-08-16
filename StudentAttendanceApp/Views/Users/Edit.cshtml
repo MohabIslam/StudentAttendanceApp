@@ -1,14 +1,11 @@
 ﻿@model StudentAttendanceApp.ViewModels.UserFormViewModel
 
-@{
-    var title = Model.IsEditMode ? "✏ Edit User" : "➕ Add User";
-    ViewData["Title"] = title;
-}
+
 
 <div class="container mt-4">
     <div class="card shadow">
         <div class="card-header bg-success text-white">
-            <h3>@title</h3>
+
         </div>
         <div class="card-body">
             <form asp-action="@((Model.IsEditMode ? "Edit" : "Create"))" method="post">
@@ -43,7 +40,7 @@
 
                 <div class="mb-3">
                     <label asp-for="User.BranchId" class="form-label fw-bold">Branch</label>
-                    <select asp-for="User.BranchId" asp-items="@(new SelectList(Model.Branches, "Id", "Name"))" class="form-select">
+                    <select asp-for="User.BranchId" asp-items="Model.Branches" class="form-select">
                         <option value="">-- Select Branch --</option>
                     </select>
                     <span asp-validation-for="User.BranchId" class="text-danger"></span>

@@ -32,26 +32,33 @@ namespace StudentAttendanceApp.Controllers
         }
 
         [HttpPost]
+        [HttpPost]
         public IActionResult Create(StudentGroup group)
         {
             //if (ModelState.IsValid)
             //{
+                group.CreatedAt = DateTime.Now; // 🔹 إضافة وقت الإنشاء
                 _context.StudentGroups.Add(group);
                 _context.SaveChanges();
                 return RedirectToAction(nameof(Index));
         //    }
-            ViewBag.Tracks = new SelectList(_context.Tracks, "Id", "Name", group.TrackId);
+            ViewBag.Tracks = new SelectList(_context.Tracks.Include(t => t.Branch), "Id", "Name", group.TrackId);
             return View(group);
         }
 
+
         public IActionResult Edit(int id)
         {
-            var group = _context.StudentGroups.Find(id);
+            var group = _context.StudentGroups
+                .Include(g => g.Track)
+                .FirstOrDefault(g => g.Id == id);
+
             if (group == null) return NotFound();
 
             ViewBag.Tracks = new SelectList(_context.Tracks, "Id", "Name", group.TrackId);
             return View(group);
         }
+
 
         [HttpPost]
         public IActionResult Edit(StudentGroup group)
