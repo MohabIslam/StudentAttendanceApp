@@ -1,0 +1,171 @@
+﻿@model StudentAttendanceApp.ViewModels.DashboardViewModel
+@{
+    ViewData["Title"] = "Dashboard";
+    var role = Model.CurrentRole;
+}
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+<div class="container mt-5">
+    <h2 class="text-center text-primary mb-4 fw-bold">📊 ITI Attendance Dashboard</h2>
+
+    @if (role == "Admin")
+    {
+        <div class="row g-4">
+            <div class="col-md-3">
+                <a href="@Url.Action("Index", "Users", new { role = "Student" })" class="text-decoration-none">
+                    <div class="card shadow border-0 text-white bg-primary text-center p-3">
+                        <h5><i class="bi bi-people-fill"></i> Students</h5>
+                        <h2>@Model.StudentsCount</h2>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-3">
+                <a href="@Url.Action("Index", "Users", new { role = "Instructor" })" class="text-decoration-none">
+                    <div class="card shadow border-0 text-white bg-success text-center p-3">
+                        <h5><i class="bi bi-mortarboard-fill"></i> Instructors</h5>
+                        <h2>@Model.InstructorsCount</h2>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-3">
+                <a href="@Url.Action("Index", "Branches")" class="text-decoration-none">
+                    <div class="card shadow border-0 text-white bg-danger text-center p-3">
+                        <h5><i class="bi bi-building"></i> Branches</h5>
+                        <h2>@Model.BranchesCount</h2>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-3">
+                <a href="@Url.Action("Index", "Groups")" class="text-decoration-none">
+                    <div class="card shadow border-0 text-white bg-warning text-center p-3">
+                        <h5><i class="bi bi-collection"></i> Groups</h5>
+                        <h2>@Model.GroupsCount</h2>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <div class="row g-4 mt-1">
+            <div class="col-md-4">
+                <a href="@Url.Action("Index", "Attendances")" class="text-decoration-none">
+                    <div class="card shadow border-0 text-white bg-secondary text-center p-3">
+                        <h5><i class="bi bi-calendar-check"></i> Today Total</h5>
+                        <h2>@Model.TodayTotal</h2>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-4">
+                <a href="@Url.Action("Index", "Attendances")" class="text-decoration-none">
+                    <div class="card shadow border-0 text-white bg-success text-center p-3">
+                        <h5><i class="bi bi-check2-circle"></i> Present</h5>
+                        <h2>@Model.TodayPresent</h2>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-4">
+                <a href="@Url.Action("Index", "Attendances")" class="text-decoration-none">
+                    <div class="card shadow border-0 text-white bg-danger text-center p-3">
+                        <h5><i class="bi bi-x-circle"></i> Absent</h5>
+                        <h2>@Model.TodayAbsent</h2>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <hr class="my-4" />
+
+        <div class="row g-4">
+            <div class="col-md-6">
+                <div class="card shadow border-0">
+                    <div class="card-header bg-light">
+                        <strong>Roles Distribution</strong>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="rolesPie"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card shadow border-0">
+                    <div class="card-header bg-light">
+                        <strong>Today's Attendance</strong>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="todayBar"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <hr class="my-4" />
+
+        <h4 class="mt-3">🆕 Recent Users</h4>
+        <ul class="list-group">
+            @foreach (var user in Model.RecentUsers)
+            {
+                <li class="list-group-item d-flex align-items-center">
+                    <i class="bi bi-person-circle me-2"></i> @user.UserName
+                </li>
+            }
+        </ul>
+
+        <div class="mt-4 d-flex gap-2">
+            <a class="btn btn-primary" href="@Url.Action("Create", "Users")">➕ Add User</a>
+            <a class="btn btn-secondary" href="@Url.Action("Index", "Attendances")">📄 View Attendance</a>
+            <a class="btn btn-warning text-white" href="@Url.Action("Index", "Branches")">🏢 Manage Branches</a>
+        </div>
+    }
+    else if (role == "Instructor")
+    {
+        <h4>👨‍🏫 Instructor Panel</h4>
+        <p class="text-muted">هنكمل ربط طلابك حسب الجروب قريبًا.</p>
+        <div class="mt-3 d-flex gap-2">
+            <a class="btn btn-primary" href="@Url.Action("MarkAttendance", "Attendances")">📋 Mark Attendance</a>
+            <a class="btn btn-info text-white" href="@Url.Action("Index", "Groups")">📚 View My Groups</a>
+        </div>
+    }
+    else if (role == "Student")
+    {
+        <h4>👨‍🎓 Student Panel</h4>
+        <a class="btn btn-success" href="@Url.Action("Index", "Attendances")">📄 View My Attendance</a>
+    }
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Pie: Roles distribution (Students vs Instructors)
+    const rolesCtx = document.getElementById('rolesPie');
+    if (rolesCtx) {
+        new Chart(rolesCtx, {
+            type: 'pie',
+            data: {
+                labels: ['Students', 'Instructors'],
+                datasets: [{
+                    data: [@Model.StudentsCount, @Model.InstructorsCount]
+                }]
+            },
+            options: { responsive: true }
+        });
+    }
+
+    // Bar: Today's attendance (Present vs Absent)
+    const todayCtx = document.getElementById('todayBar');
+    if (todayCtx) {
+        new Chart(todayCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Present', 'Absent'],
+                datasets: [{
+                    label: 'Today',
+                    data: [@Model.TodayPresent, @Model.TodayAbsent]
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: { y: { beginAtZero: true, precision: 0 } }
+            }
+        });
+    }
+</script>
